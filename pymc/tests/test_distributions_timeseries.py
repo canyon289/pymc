@@ -81,7 +81,6 @@ class TestGaussianRandomWalk:
 
         np.testing.assert_almost_equal(logp_eval, logp_reference, decimal=6)
 
-
     @pytest.mark.parametrize(
         "steps,size,expected",
         (
@@ -157,6 +156,7 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         recovered_mu = trace.posterior["mu"].mean()
         recovered_sigma = trace.posterior["sigma"].mean()
         np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
+
 
 @pytest.mark.xfail(reason="Timeseries not refactored")
 def test_AR():
