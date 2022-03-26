@@ -102,7 +102,6 @@ class GaussianRandomWalkRV(RandomVariable):
             init_size = 1
             steps_size = steps
 
-        # TODO: Ask Ricardo how size is known to be a tuple? Its int above
         # If size is None then the returned series should be (size, 1+steps)
         else:
             init_size = (*size, 1)
@@ -173,6 +172,7 @@ class GaussianRandomWalk(distribution.Continuous):
                 and init.owner.op.ndim_supp == 0
             ):
                 raise TypeError("init must be a scalar distribution variable")
+
             if size is not None or shape is not None:
                 init = change_rv_size(init, to_tuple(size or shape))
             else:
@@ -180,6 +180,7 @@ class GaussianRandomWalk(distribution.Continuous):
                 mu_ = at.broadcast_arrays(mu, sigma)[0]
                 init = change_rv_size(init, mu_.shape)
 
+        # Ignores logprob of init var because that's captured somewhere else
         init.tag.ignore_logprob = True
 
         return super().dist([mu, sigma, init, steps], size=size, **kwargs)
