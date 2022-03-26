@@ -180,6 +180,8 @@ class GaussianRandomWalk(distribution.Continuous):
                 mu_ = at.broadcast_arrays(mu, sigma)[0]
                 init = change_rv_size(init, mu_.shape)
 
+        init.tag.ignore_logprob = True
+
         return super().dist([mu, sigma, init, steps], size=size, **kwargs)
 
     def logp(
