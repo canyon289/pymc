@@ -34,6 +34,7 @@ from pymc.tests.helpers import select_by_precision
 from pymc.tests.test_distributions_random import BaseTestDistributionRandom
 
 
+@pytest.mark.skip("These are old tests that I may need delete")
 class TestGaussianRandomWalk:
     @pytest.mark.parametrize(
         "kwargs,expected",
@@ -80,22 +81,6 @@ class TestGaussianRandomWalk:
 
         np.testing.assert_almost_equal(logp_eval, logp_reference, decimal=6)
 
-    def test_grw_inference(self):
-        mu, sigma, steps = 2, 1, 10000
-        obs = np.concatenate([[0], np.random.normal(mu, sigma, size=steps)]).cumsum()
-
-        with pm.Model():
-            _mu = pm.Uniform("mu", -10, 10)
-            _sigma = pm.Uniform("sigma", 0, 10)
-            # Workaround for bug in `at.diff` when data is constant
-            obs_data = pm.MutableData("obs_data", obs)
-            grw = GaussianRandomWalk("grw", _mu, _sigma, steps=steps, observed=obs_data)
-
-            trace = pm.sample()
-
-        recovered_mu = trace.posterior["mu"].mean()
-        recovered_sigma = trace.posterior["sigma"].mean()
-        np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
 
     @pytest.mark.parametrize(
         "steps,size,expected",
@@ -156,6 +141,22 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         with pytest.raises(NotImplementedError):
             self.pymc_rv.eval()
 
+    def test_grw_inference(self):
+        mu, sigma, steps = 2, 1, 10000
+        obs = np.concatenate([[0], np.random.normal(mu, sigma, size=steps)]).cumsum()
+
+        with pm.Model():
+            _mu = pm.Uniform("mu", -10, 10)
+            _sigma = pm.Uniform("sigma", 0, 10)
+            # Workaround for bug in `at.diff` when data is constant
+            obs_data = pm.MutableData("obs_data", obs)
+            grw = GaussianRandomWalk("grw", _mu, _sigma, steps=steps, observed=obs_data)
+
+            trace = pm.sample()
+
+        recovered_mu = trace.posterior["mu"].mean()
+        recovered_sigma = trace.posterior["sigma"].mean()
+        np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
 
 @pytest.mark.xfail(reason="Timeseries not refactored")
 def test_AR():

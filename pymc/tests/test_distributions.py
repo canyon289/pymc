@@ -3420,8 +3420,7 @@ class TestLKJCholeskCov:
         "sd_dist",
         [
             pm.Exponential.dist(1),
-            # For some reason this test is running when TimeSeries test is run
-            # pytest.mark.xfail(pm.MvNormal.dist(np.ones(3), np.eye(3)),)
+            pytest.mark.xfail(pm.MvNormal.dist(np.ones(3), np.eye(3)),)
         ],
     )
     def test_sd_dist_automatically_resized(self, sd_dist):
