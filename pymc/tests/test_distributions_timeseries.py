@@ -30,80 +30,9 @@ from pymc.distributions.timeseries import (
 )
 from pymc.model import Model
 from pymc.sampling import sample, sample_posterior_predictive
+from pymc.tests import test_distributions as td
 from pymc.tests.helpers import select_by_precision
 from pymc.tests.test_distributions_random import BaseTestDistributionRandom
-
-
-@pytest.mark.skip("These are old tests that I may need delete")
-class TestGaussianRandomWalk:
-    @pytest.mark.parametrize(
-        "kwargs,expected",
-        [
-            ({"steps": 5}, (6,)),
-            ({"size": 1}, (5,)),
-            ({"size": 2}, (5,)),
-            # implied dims are not working
-            pytest.param({"mu": [0, 0]}, (2, 5), marks=pytest.mark.xfail),
-        ],
-    )
-    def test_grw_rv_op_shape(self, kwargs, expected):
-        """Basic test for GRW RV op"""
-        default_kwargs = dict(init=1, mu=3, sd=0.0000001, steps=4, size=None)
-
-        combined_kwargs = {**default_kwargs, **kwargs}
-        grw = gaussianrandomwalk(
-            combined_kwargs["mu"],
-            combined_kwargs["sd"],
-            combined_kwargs["init"],
-            combined_kwargs["steps"],
-        ).eval()
-
-        assert grw.shape == expected
-
-    def test_grw_logp(self):
-        # `at.diff` is currently broken with constants
-        test_vals = [0, 1, 2]
-        vals = at.vector("vals")
-        mu = 1
-        sigma = 2
-        init = pm.Normal.dist(0, sigma)
-
-        with pm.Model():
-            grw = GaussianRandomWalk("grw", mu, sigma, init=init, steps=2)
-
-        logp = pm.logp(grw, vals)
-        logp_eval = logp.eval({vals: test_vals})
-
-        logp_reference = (
-            stats.norm(0, sigma).logpdf(test_vals[0])
-            + stats.norm(mu, sigma).logpdf(np.diff(test_vals)).sum()
-        )
-
-        np.testing.assert_almost_equal(logp_eval, logp_reference, decimal=6)
-
-    @pytest.mark.parametrize(
-        "steps,size,expected",
-        (
-            (1, None, (2,)),
-            (2, 1, (1, 3)),
-            (2, 5, (5, 3)),
-            (10, 5, (5, 11)),
-        ),
-    )
-    def test_grw_shape(self, steps, size, expected):
-        grw_dist = pm.GaussianRandomWalk.dist(mu=0, sigma=1, steps=steps, size=size)
-        expected_symbolic = tuple(grw_dist.shape.eval())
-        assert expected_symbolic == expected
-
-    @pytest.mark.parametrize("size", (None, (1, 2), (10, 2), (3, 100, 2)))
-    def test_init_automatically_resized(self, size):
-        x = GaussianRandomWalk.dist(mu=[0, 1], init=pm.Normal.dist(), size=size)
-        init = x.owner.inputs[-2]
-        assert init.eval().shape == size if size is not None else (2,)
-
-        x = GaussianRandomWalk.dist(mu=[0, 1], init=pm.Normal.dist(size=5), shape=size)
-        init = x.owner.inputs[-2]
-        assert init.eval().shape == size if size is not None else (2,)
 
 
 class TestGaussianRandomWalk(BaseTestDistributionRandom):
@@ -156,6 +85,17 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         recovered_mu = trace.posterior["mu"].mean()
         recovered_sigma = trace.posterior["sigma"].mean()
         np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
+
+
+class TestGRWScipy(td.TestMatchesScipy):
+    def test_grw(self):
+        self.check_logp(
+            pm.GaussianRandomWalk,
+            td.Vector(td.R, 10),
+            {"mu": td.R, "sigma": td.Rplus, "steps": td.Nat},
+            lambda value, mu, sigma: stats.norm.logpdf(value, mu, sigma).cumsum().sum(),
+            decimal=select_by_precision(float64=6, float32=1),
+        )
 
 
 @pytest.mark.xfail(reason="Timeseries not refactored")

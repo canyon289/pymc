@@ -2619,16 +2619,6 @@ class TestMatchesScipy:
             assert not np.isfinite(m.compile_logp()({"x": -1.0}))
             assert not np.isfinite(m.compile_logp()({"x": 11.0}))
 
-    @pytest.mark.skip("Unsure how to use this test fixture")
-    def test_grw(self):
-        self.check_logp(
-            pm.GaussianRandomWalk,
-            Vector(R, 10),
-            {"mu": R, "sigma": Rplus, "steps": Nat},
-            lambda value, mu, sigma: sp.norm.logpdf(value, mu, sigma).cumsum().sum(),
-            decimal=select_by_precision(float64=6, float32=1),
-        )
-
 
 class TestBound:
     """Tests for pm.Bound distribution"""
@@ -3420,9 +3410,7 @@ class TestLKJCholeskCov:
         "sd_dist",
         [
             pm.Exponential.dist(1),
-            pytest.mark.xfail(
-                pm.MvNormal.dist(np.ones(3), np.eye(3)),
-            ),
+            pm.MvNormal.dist(np.ones(3), np.eye(3)),
         ],
     )
     def test_sd_dist_automatically_resized(self, sd_dist):
