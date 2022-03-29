@@ -89,7 +89,7 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
 
 
-class TestGRWScipy(td.TestMatchesScipy):
+class TestGRWScipy(td.LogpChecks):
     # TODO: Test LogP for different inits in its own function
 
     # TODO: Find issue that says GRW wont take vector 
