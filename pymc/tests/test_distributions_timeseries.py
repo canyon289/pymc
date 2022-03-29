@@ -88,12 +88,23 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
 
 
 class TestGRWScipy(td.TestMatchesScipy):
-    def test_grw(self):
+
+    # TODO: Find issue that says GRW wont take vector 
+    def test_grw_logp(self):
+        def grw_logp(value, mu, sigma):
+            # Relying on fact that init will be normal
+            # Note: This means we're not testing 
+            stationary_series = np.diff(value)
+            logp = stats.norm.logpdf(value[0], mu, sigma) + \
+            stats.norm.logpdf(stationary_series, mu, sigma).sum(),
+            return logp
+             
+        # TODO: Make base class static static method
         self.check_logp(
             pm.GaussianRandomWalk,
             td.Vector(td.R, 10),
             {"mu": td.R, "sigma": td.Rplus, "steps": td.Nat},
-            lambda value, mu, sigma: stats.norm.logpdf(value, mu, sigma).cumsum().sum(),
+            grw_logp,
             decimal=select_by_precision(float64=6, float32=1),
         )
 
