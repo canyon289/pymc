@@ -23,6 +23,7 @@ from aesara.tensor.random.op import RandomVariable
 from pymc.aesaraf import change_rv_size, floatX, intX
 from pymc.distributions import distribution, logprob, multivariate
 from pymc.distributions.continuous import Flat, Normal, get_tau_sigma
+from pymc.distributions.dist_math import check_parameters
 from pymc.distributions.shape_utils import to_tuple
 
 __all__ = [
@@ -214,7 +215,11 @@ class GaussianRandomWalk(distribution.Continuous):
         stationary_series = value[..., 1:] - value[..., :-1]
         series_logp = logprob.logp(Normal.dist(mu, sigma), stationary_series)
 
-        return init_logp + series_logp.sum(axis=-1)
+        return check_parameters(
+            init_logp + series_logp.sum(axis=-1),
+            steps > 0,
+            msg="steps > 0",
+        )
 
 
 class AR1(distribution.Continuous):

@@ -89,31 +89,6 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         np.testing.assert_allclose([mu, sigma], [recovered_mu, recovered_sigma], atol=0.2)
 
 
-class TestGRWScipy(td.TestMatchesScipy):
-    # TODO: Test LogP for different inits in its own function
-
-    # TODO: Find issue that says GRW wont take vector 
-    def test_grw_logp(self):
-        def grw_logp(value, mu, sigma):
-            # Relying on fact that init will be normal
-            # Note: This means we're not testing 
-            stationary_series = np.diff(value)
-            logp = stats.norm.logpdf(value[0], mu, sigma) + \
-            stats.norm.logpdf(stationary_series, mu, sigma).sum(),
-            return logp
-             
-        # TODO: Make base class a static method
-        # TODO: Reuse this make this static so it doesnt run all other ones
-        self.check_logp(
-            pm.GaussianRandomWalk,
-            td.Vector(td.R, 10),
-            {"mu": td.R, "sigma": td.Rplus, "steps": td.Nat},
-            grw_logp,
-            decimal=select_by_precision(float64=6, float32=1),
-            n_samples=1,
-        )
-
-
 @pytest.mark.xfail(reason="Timeseries not refactored")
 def test_AR():
     # AR1
