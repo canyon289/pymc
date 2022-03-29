@@ -623,8 +623,7 @@ def test_hierarchical_obs_logpt():
     assert not any(isinstance(o, RandomVariable) for o in ops)
 
 
-class LogpChecks():
-
+class TestMatchesScipy:
     def check_logp(
         self,
         pymc_dist,
@@ -775,8 +774,6 @@ class LogpChecks():
                     -np.inf,
                     err_msg=str(invalid_value),
                 )
-
-class TestMatchesScipy(LogpChecks):
 
     def check_logcdf(
         self,
