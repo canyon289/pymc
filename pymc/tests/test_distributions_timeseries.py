@@ -88,6 +88,7 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
 
 
 class TestGRWScipy(td.TestMatchesScipy):
+    # TODO: Test LogP for different inits in its own function
 
     # TODO: Find issue that says GRW wont take vector 
     def test_grw_logp(self):
@@ -99,13 +100,14 @@ class TestGRWScipy(td.TestMatchesScipy):
             stats.norm.logpdf(stationary_series, mu, sigma).sum(),
             return logp
              
-        # TODO: Make base class static static method
+        # TODO: Make base class a static method
         self.check_logp(
             pm.GaussianRandomWalk,
             td.Vector(td.R, 10),
             {"mu": td.R, "sigma": td.Rplus, "steps": td.Nat},
             grw_logp,
             decimal=select_by_precision(float64=6, float32=1),
+            n_samples=1,
         )
 
 

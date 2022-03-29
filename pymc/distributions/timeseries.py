@@ -150,7 +150,7 @@ class GaussianRandomWalk(distribution.Continuous):
     @classmethod
     def dist(
         cls, mu=0.0, sigma=1.0, init=None, steps: int = 1, size=None, **kwargs
-    ) -> TensorVariable:
+    ) -> at.TensorVariable:
 
         mu = at.as_tensor_variable(floatX(mu))
         sigma = at.as_tensor_variable(floatX(sigma))
