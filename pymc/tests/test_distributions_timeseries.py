@@ -14,8 +14,6 @@
 import numpy as np
 import pytest
 
-from scipy import stats
-
 import pymc as pm
 
 from pymc.aesaraf import floatX
@@ -26,11 +24,9 @@ from pymc.distributions.timeseries import (
     GARCH11,
     EulerMaruyama,
     GaussianRandomWalk,
-    gaussianrandomwalk,
 )
 from pymc.model import Model
 from pymc.sampling import sample, sample_posterior_predictive
-from pymc.tests import test_distributions as td
 from pymc.tests.helpers import select_by_precision
 from pymc.tests.test_distributions_random import BaseTestDistributionRandom
 
@@ -50,15 +46,8 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
 
     def check_rv_inferred_size(self):
         steps = self.pymc_dist_params["steps"]
-        sizes_to_check = [
-            None,
-            (),
-            1,
-            (1,),
-        ]
+        sizes_to_check = [None, (), 1, (1,)]
         sizes_expected = [(steps + 1,), (steps + 1,), (1, steps + 1), (1, steps + 1)]
-        # sizes_to_check = [None, (), 1, (1,), 5, (4, 5), (2, 4, 2)]
-        # sizes_expected = [(), (), (1,), (1,), (5,), (4, 5), (2, 4, 2)]
 
         for size, expected in zip(sizes_to_check, sizes_expected):
             pymc_rv = self.pymc_dist.dist(**self.pymc_dist_params, size=size)
@@ -69,7 +58,7 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         with pytest.raises(NotImplementedError):
             self.pymc_rv.eval()
 
-    # TODO: Move this out of this test class, not related, makes more sense together with 
+    # TODO: Move this out of this test class, not related, makes more sense together with
     # the other logp tests
     def test_grw_inference(self):
         mu, sigma, steps = 2, 1, 10000

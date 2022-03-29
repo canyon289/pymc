@@ -25,6 +25,7 @@ from pymc.distributions import distribution, logprob, multivariate
 from pymc.distributions.continuous import Flat, Normal, get_tau_sigma
 from pymc.distributions.dist_math import check_parameters
 from pymc.distributions.shape_utils import to_tuple
+from pymc.util import check_dist_not_registered
 
 __all__ = [
     "AR1",
@@ -35,8 +36,6 @@ __all__ = [
     "MvGaussianRandomWalk",
     "MvStudentTRandomWalk",
 ]
-
-from pymc.util import check_dist_not_registered
 
 
 class GaussianRandomWalkRV(RandomVariable):

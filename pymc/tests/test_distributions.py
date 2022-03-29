@@ -2635,6 +2635,7 @@ class TestMatchesScipy:
             decimal=select_by_precision(float64=6, float32=1),
         )
 
+
 class TestBound:
     """Tests for pm.Bound distribution"""
 
