@@ -171,7 +171,7 @@ class GaussianRandomWalk(distribution.Continuous):
                 and isinstance(init.owner.op, RandomVariable)
                 and init.owner.op.ndim_supp == 0
             ):
-                raise TypeError("init must be a scalar distribution variable")
+                raise TypeError("init must be a univariate distribution variable")
 
             if size is not None or shape is not None:
                 init = change_rv_size(init, to_tuple(size or shape))
