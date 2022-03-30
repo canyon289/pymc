@@ -58,8 +58,6 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
         with pytest.raises(NotImplementedError):
             self.pymc_rv.eval()
 
-    # TODO: Move this out of this test class, not related, makes more sense together with
-    # the other logp tests
     def test_grw_inference(self):
         mu, sigma, steps = 2, 1, 10000
         obs = np.concatenate([[0], np.random.normal(mu, sigma, size=steps)]).cumsum()
@@ -71,7 +69,7 @@ class TestGaussianRandomWalk(BaseTestDistributionRandom):
             obs_data = pm.MutableData("obs_data", obs)
             grw = GaussianRandomWalk("grw", _mu, _sigma, steps=steps, observed=obs_data)
 
-            trace = pm.sample()
+            trace = pm.sample(chains=1)
 
         recovered_mu = trace.posterior["mu"].mean()
         recovered_sigma = trace.posterior["sigma"].mean()
