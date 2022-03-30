@@ -2619,7 +2619,7 @@ class TestMatchesScipy:
             assert not np.isfinite(m.compile_logp()({"x": -1.0}))
             assert not np.isfinite(m.compile_logp()({"x": 11.0}))
 
-    def test_grw(self):
+    def test_gaussianrandomwalk(self):
         def ref_logp(value, mu, sigma, steps):
             # Relying on fact that init will be normal by default
             return (
